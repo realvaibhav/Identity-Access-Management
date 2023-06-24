@@ -1,0 +1,23 @@
+from datetime import datetime
+from pydantic import BaseModel, Field, validator
+from typing import Optional
+from bson.objectid import ObjectId
+
+
+class UserModel(BaseModel):
+    id: Optional[str] = Field(alias="_id", default=None)
+    name: str = Field(None, index=True)
+    email: str = Field(None)
+    created_at: datetime = Field(None)
+    updated_at: datetime = Field(None)
+    
+    
+    @validator('id', pre=True, always=True)
+    def id_to_str(cls, value):
+        if isinstance(value, ObjectId):
+            return str(value)
+        return value
+
+    class Config:
+        collection = "users"
+        orm_mode = True
